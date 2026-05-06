@@ -52,7 +52,7 @@ An AI-powered email assistant built using n8n that ensures emails are only sent 
 
 ---
 
-## 📷 (Optional but Recommended)
+## 📷 Screenshort My Work!!
 
 Here are the screenshots of my workflow :
 ![Full Workflow](ScreenShort_Email_agent.png)

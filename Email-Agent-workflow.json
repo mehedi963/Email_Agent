@@ -1,0 +1,184 @@
+{
+  "name": "My workflow 5",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -464,
+        -80
+      ],
+      "id": "b15e1bef-e17d-4074-bd42-791d5a0a463f",
+      "name": "When chat message received",
+      "webhookId": "6dc2d3ab-5615-4245-9adb-ba76be8c5bf2"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are an AI email assistant with access to two tools:\n1) Google Contacts Lookup Tool (to find email addresses)\n2) Gmail Send Email Tool (to send emails)\n\nRULES:\n- You MUST ALWAYS use the Google Contacts Lookup Tool before sending any email.\n- NEVER guess, assume, or fabricate an email address.\n- If no email is found, ask the user to provide it.\n- DO NOT send an email without a confirmed valid email address.\n\nWORKFLOW:\n1. Identify the recipient name, subject, and email content from the user request.\n2. Use the Google Contacts Lookup Tool to find the recipient’s email address.\n3. If multiple results are found, ask the user to confirm the correct one.\n4. If no result is found, ask the user for the email address.\n5. Once a valid email is confirmed, prepare the email.\n6. Use the Gmail Send Email Tool to send the email.\n\nBEHAVIOR:\n- Be concise and professional.\n- Ask for missing details if needed.\n- Do not skip steps.\n- Do not expose tool usage unless necessary.\n\nFAILURE HANDLING:\n- If a tool fails, inform the user and ask how to proceed."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -176,
+        -80
+      ],
+      "id": "69b16a5f-2287-4f9b-8929-a2d24b07ca5c",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        -448,
+        128
+      ],
+      "id": "f12d839f-f778-4a37-bbea-53b3743bfee7",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "ScHzC5SBsfitT10Z",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -256,
+        144
+      ],
+      "id": "f90710f5-bf89-4122-bbc1-c5c6157d1220",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To', ``, 'string') }}",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "emailType": "text",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [
+        -32,
+        160
+      ],
+      "id": "d7efbdd2-0ed8-4321-82ab-20729f057531",
+      "name": "Send a message in Gmail",
+      "webhookId": "1ca9c6e7-aa92-4575-b688-4322d56f133f",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "pON88kKj0TqzDnTe",
+          "name": "Gmail account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "limit": 1,
+        "fields": [
+          "emailAddresses",
+          "birthdays",
+          "names"
+        ],
+        "useQuery": true
+      },
+      "type": "n8n-nodes-base.googleContactsTool",
+      "typeVersion": 1,
+      "position": [
+        192,
+        144
+      ],
+      "id": "d3d5dbf3-bd9f-404f-b8f5-25df10e0d2ea",
+      "name": "Get many contacts in Google Contacts",
+      "credentials": {
+        "googleContactsOAuth2Api": {
+          "id": "o8EbUqBHpNmgdQJy",
+          "name": "Google Contacts OAuth2 API"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message in Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many contacts in Google Contacts": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "7965700b-c47c-4d1f-a828-ba1a9df0ab39",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a7ddc7098cfecc0aa6f5e5fdf440042ede3bbc120aeae892b10d14d8d74c9620"
+  },
+  "id": "TBwT1GqjEbLPxsjp",
+  "tags": []
+}
